@@ -1,0 +1,8 @@
+{
+"IPbroker":"127.0.0.1",
+"threshold" : 0.3,
+"required_flux" : 55000,
+"lumen_lamp" : 2300,
+"total_lamps" : 24,
+"default_tint" : 1               
+}
