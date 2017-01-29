@@ -1,6 +1,6 @@
 import random
 from datetime import date, datetime
-from fileconfigdicts import *
+from configuration_file import configuration_environment
 
 
 Y = 2000 # dummy leap year
@@ -16,12 +16,14 @@ class Environment():
 
     def __init__(self):
         self.season = self.get_season(date.today())
-        self.intensity = ""
-        self.flux = ""
+        self.intensity = 0
+        self.flux = 0
+        self.n_people = 0
                
                                 
     def generate_flux(self):
-        flux = random.uniform(flux_season_min[self.season], flux_season_max[self.season])*20
+        flux = random.uniform(configuration_environment["flux_season_min"][self.season], \
+                              configuration_environment["flux_season_max"][self.season])*20
         self.flux = flux
         return flux
 
@@ -29,7 +31,6 @@ class Environment():
 		#to be DONE 
 		# intensity = algoritmochegeneraintensita(self.season)
         self.intensity = random.uniform(0,1)
-
         
     def get_season(self, now):
         if isinstance(now, datetime):
@@ -45,5 +46,6 @@ class Environment():
     def generate_n_person(self):
         week_day = datetime.now().weekday()
         now_hour = datetime.now().hour       
-        self.n_people = int(random.uniform(n_people_min[now_hour], n_people_max[now_hour])*week_days[week_day])
+        self.n_people = int(random.uniform(configuration_environment["n_people_min"][now_hour],\
+                                           configuration_environment["n_people_max"][now_hour])*configuration_environment["week_days"][week_day])
         return self.n_people    

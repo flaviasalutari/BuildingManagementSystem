@@ -1,38 +1,67 @@
 import math
 import random
 import json
-from fileconfig import *
-from controllers_config import *
+from configuration_file import configuration_room
+from datetime import datetime
+import time
 
 class ShadowingSystem():
 
-    def __init__(self, tint, threshold):
-        self.tint = tint
+    def __init__(self):
+        self.tint = configuration_room["Room"]["default_tint"]
         self.ex_intensity = ""
-        self.threshold = threshold
-        self.perc_tints = perc_tints
+        self.threshold = configuration_room["Room"]["threshold"]
+        self.perc_tints = configuration_room["default"]["perc_tints"]
+        self.topic1 = "ShadowingSystem/GetIntensity"
+        self.topic2 = "ShadowingSystem/GetNpeople"
+        self.read_1 = 0
+        self.read_2 = 0
 
-    def read_msg(self, msg):
-        try:
-            obj_m = json.loads(str(msg))
-            if obj_m["sensor_type"]== "intensity":
-                intensity = obj_m["intensity_sensed"]
-                print "\n intensity: " + str(intensity)
-                self.ex_intensity = intensity
-                self.check_intensity()
-            else:
-                pass
-        except:
-            print "Error in parsing the message _ intensty"
+
+    def request_msg_intensity(self, client):
+        msg1 = {
+                "request": "get_intensity", 
+                "timestamp": str(datetime.now())
+        }
+        client.publish(self.topic1, json.dumps(msg1))
+        self.read_1 = 0
 
         
+    def request_msg_people(self, client):
+        msg2 = {
+                "request": "get_n_people", 
+                "timestamp": str(datetime.now())
+        }
+        client.publish(self.topic2, json.dumps(msg2))
+        self.read_2 = 0
+        time.sleep(0.5)
+
+
+    def read_msg(self, msg):
+#        try:
+        obj_m = json.loads(str(msg))
+        if obj_m["sensor_type"]== "intensity" and self.read_1 == 0:
+            intensity = obj_m["intensity_sensed"]
+            self.read_1 = 1
+#                print "\n intensity: " + str(intensity) 
+            self.ex_intensity = intensity
+            self.check_intensity()
+        elif obj_m["sensor_type"] == "PIR" and self.read_2 == 0:
+            self.read_2 = 1
+            presence = obj_m["n_people_sensed"]
+            print "\n Number of people here : " + str(presence)
+        else:
+            pass
+#        except:
+#            print "Error in parsing the message _ intensty"
+
     def check_intensity(self):
         if self.ex_intensity>self.threshold:
             for tint in range(1,4):
-                transmitted_intensity=perc_tints[tint]*self.ex_intensity
+                transmitted_intensity=self.perc_tints[tint]*self.ex_intensity
                 if transmitted_intensity < self.threshold:
                     self.tint = tint
-                    print "Transmitted intensity: " + str(transmitted_intensity)
+                    print "\n Transmitted intensity: " + str(transmitted_intensity)
                     print "\n The tint is: " + str(tint)
                     return
         else:
@@ -41,68 +70,106 @@ class ShadowingSystem():
    
 class ArtificialLight():
     
-    def __init__(self, required_flux, lumen_lamp, total_lamps):
-        self.required_flux = required_flux
-        self.lumen_lamp = lumen_lamp
-        self.total_lamps = total_lamps
-        self.active_lamps = int(random.uniform(0,total_lamps))
+    def __init__(self):
+        self.required_flux = configuration_room["Room"]["required_flux"]
+        self.lumen_lamp = configuration_room["Room"]["lumen_lamp"]
+        self.total_lamps = configuration_room["Room"]["total_lamps"]
+        self.active_lamps = int(random.uniform(0,self.total_lamps))
+        self.topic1 = "ArtificialLight/GetFlux"
+        self.topic2 = "ArtificialLight/GetNpeople"
+        self.read1 = 0
+        self.read2 = 0
+
+
         
+    def request_msg_flux(self, client):
+        msg1 = {
+                "request": "get_flux", 
+                "timestamp": str(datetime.now())
+        }
+        
+        client.publish(self.topic1, json.dumps(msg1))
+        self.read1 = 0
+        time.sleep(0.5)
+
+
+    def request_msg_people(self, client):
+        msg2 = {
+                "request": "get_n_people", 
+                "timestamp": str(datetime.now())
+        }
+        client.publish(self.topic2, json.dumps(msg2))
+        self.read2 = 0
+        time.sleep(0.5)
+
+
     def read_msg(self, msg):
-        try:
-            obj_m = json.loads(str(msg))
-            print obj_m
-            if obj_m["sensor_type"]== "flux":
-                total_flux = obj_m["total_flux_sensed"]
-                print "\n total_flux : " + str(total_flux)
-                self.total_flux = total_flux
-            elif obj_m["sensor_type"]== "PIR":
-                presence = obj_m["n_people_sensed"]
-                self.presence = presence
-                if self.presence is not 0:
-                    if self.total_flux < self.required_flux :
-                        diff = self.required_flux - self.total_flux
-                        n_lamps_required = math.ceil(diff / self.lumen_lamp)
-                        print "\n Number of lamps to be switched ON: " + str(n_lamps_required)
-                        self.actuator(n_lamps_required) 
-                else:
-                    pass 
-            else: 
-                pass
-        except:
-            print "Error in parsing the message _ flux"
+#        try:
+        obj_m = json.loads(str(msg))
+        if obj_m["sensor_type"]== "flux" and self.read1 == 0:
+            self.read1 = 1
+            total_flux = obj_m["total_flux_sensed"]
+            print "\n total_flux : " + str(total_flux)
+            self.total_flux = total_flux
+        elif obj_m["sensor_type"] == "PIR" and self.read2 == 0:
+            self.read2 = 1
+            presence = obj_m["n_people_sensed"]
+            self.presence = presence
+            if self.presence is not 0:
+                if self.total_flux < self.required_flux :
+                    diff = self.required_flux - self.total_flux
+                    n_lamps_required = math.ceil(diff / self.lumen_lamp)
+                    print "\n Number of lamps to be switched ON: " + str(n_lamps_required)
+                    self.actuator(n_lamps_required) 
+                    
+            else:
+                pass 
+        else: 
+            pass
+
+                
+#        except:
+#            print "Error in parsing the message _ flux"
 
 
 
             
     def actuator(self, n_lamps):
         self.active_lamps = self.active_lamps + n_lamps
-        # pubblica e forza l'accensione di n_lamps lampade
-        print "switched on: " + str(n_lamps)
+        print "switched on: " + str(n_lamps) 
         
 
 
-class ControlAirQuality():
+# class ControlAirQuality():
     
-    def __init__(self):
-        self.min_ACH = voc_numerator/classA
+#     def __init__(self):
+#         self.min_ACH = voc_numerator/configuration_room["default"]["classA"]
+#         self.topic = "ControlAirQuality/GetNpeople"
 
-    
-    def read_msg(self, msg): # get n_person fom dedicated sensor 
-        try:
-            obj_m = json.loads(str(msg))
-            if obj_m["sensor_type"]== "PIR":
-                n_people = obj_m["n_people_sensed"]
-                print "\n n_people: " + str(n_people)
-                self.n_people = n_people
-            else:
-                pass
-        except:
-            print "Error in parsing the message _ NPeople"
+
+#     def request_msg(self, client):
+#         msg = {
+#                 "request": "get_n_people", 
+#                 "timestamp": str(datetime.now())
+#         }
+#         client.publish(self.topic, json.dumps(msg))
+
+#     def read_msg(self, msg): # get n_person fom dedicated sensor 
+#         try:
+#             obj_m = json.loads(str(msg))
+#             if obj_m["sensor_type"]== "PIR":
+#                 n_people = obj_m["n_people_sensed"]
+#                 print "\n n_people: " + str(n_people)
+#                 self.n_people = n_people
+#             else:
+#                 pass
+#         except:
+#             print "Error in parsing the message _ NPeople"
 
         
-    def evaluate_voc(self):
-        av_occupation = self.n_people * f_occupation
-        self.ACH = q_iaq * av_occupation / volume
+#     def evaluate_voc(self):
+#         av_occupation = self.n_people * configuration_room["Room"]["f_occupation"]
+#         self.ACH = configuration_room["Room"]["q_iaq"] * av_occupation/ configuration_room["Room"]["volume"]
         
         
         # ERAVAMO QUAAAA
