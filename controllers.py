@@ -70,9 +70,13 @@ class ArtificialLight():
     
     def __init__(self):
         self.required_flux = configuration_room["Room"]["required_flux"]
-        self.lumen_lamp = configuration_room["Room"]["lumen_lamp"]
-        self.total_lamps = configuration_room["Room"]["total_lamps"]
-        self.active_lamps = int(random.uniform(0,self.total_lamps))
+        self.lumen_lamp_desk = configuration_room["Room"]["lumen_lamp_desk"]
+        self.lumen_lamp_ambient = configuration_room["Room"]["lumen_lamp_ambient"]
+        self.total_lamps_desk = configuration_room["Room"]["total_lamps_desk"]
+        self.lamps_per_ambient= configuration_room["Room"]["lamps_per_ambient"]
+        self.total_ambients= configuration_room["Room"]["total_ambients"]
+        self.active_lamps_desk = 0
+        self.active_ambients = 0
         self.topic1 = "ArtificialLight/GetFlux"
         self.topic2 = "ArtificialLight/GetNpeople"
         self.read1 = ''
@@ -82,7 +86,7 @@ class ArtificialLight():
         msg1 = {
                 "request": "get_flux", 
                 "timestamp": str(datetime.now()),
-                "active_lamps" : self.active_lamps,
+                "artificial_flux" : self.artificial_flux(),
                 "perc_tint" : perctint
         }
         
@@ -113,12 +117,38 @@ class ArtificialLight():
             if self.presence is not 0:
                 if self.total_flux < self.required_flux :
                     diff = self.required_flux - self.total_flux
-                    n_lamps_required = math.ceil(diff / self.lumen_lamp)
-                    print "\n Number of lamps to be switched ON: " + str(n_lamps_required)
-                    self.actuator(n_lamps_required) 
+                    # if diff > 0:
+                    if self.active_lamps_desk==0:
+                        self.active_lamps_desk = 1
+                        print "Lamps on desk are now ON"
+                        diff = diff - (self.total_lamps_desk * self.lumen_lamp_desk)
+                        while diff > 0:
+                            self.active_ambients += 1    
+                            diff = diff - (self.lumen_lamp_ambient * self.active_ambients * self.lamps_per_ambient)
+                        print "Lamps switched ON over: " + str(self.active_ambients) + " ambients"
+                    else:
+                        while diff > 0:
+                            self.active_ambients += 1    
+                            diff = diff - (self.lumen_lamp_ambient * self.active_ambients * self.lamps_per_ambient)
+                        print "Lamps on desk already ON, Lamps switched ON over: " + str(self.active_ambients) + " ambients"
+                    self.actuator() 
                 else:
-                    print "\n No additional lamps to be switched OFF"
-                    
+                    diff = self.total_flux - self.required_flux
+                    if self.active_ambients > 0:
+                        tot_lumen_ambient = (self.lumen_lamp_ambient * self.lamps_per_ambient)
+                        n_ambient_to_be_switched_off = int(diff/tot_lumen_ambient)
+                        if n_ambient_to_be_switched_off > self.total_ambients:
+                            self.total_ambients = 0
+                            print "Switched OFF all the ambients"
+                        else:
+                            self.total_ambients -= n_ambient_to_be_switched_off
+                            print "\nSwitched OFF : " + str(n_ambient_to_be_switched_off) + " ambients"
+                    if self.active_lamps_desk==1:
+                        if self.total_lamps_desk * self.lumen_lamp_desk < diff:
+                            self.active_lamps_desk = 0
+                            print "\nLamps on desk are switched OFF"
+                        else:
+                            print "\nLamps on desks are not switched OFF"                    
             else:
                 pass 
         else: 
@@ -128,12 +158,14 @@ class ArtificialLight():
        # except:
        #     print "Error in parsing the message _ flux"
 
-
+    def artificial_flux(self):
+        artificial_flux = (self.active_lamps_desk * self.total_lamps_desk * self.lumen_lamp_desk) +\
+                            (self.active_ambients * self.lamps_per_ambient * self.lumen_lamp_ambient)
+        return artificial_flux
 
             
-    def actuator(self, n_lamps):
-        self.active_lamps = self.active_lamps + n_lamps
-        print "switched on: " + str(n_lamps) 
+    def actuator(self):
+        print "Switch ON" 
         
 
 

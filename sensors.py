@@ -44,17 +44,15 @@ class SensorFlux(): # Si trova sopra la scrivania , nella colonna dei sensori. e
         print obj_m
         if obj_m["request"]== "get_flux":
             perc_tint = obj_m["perc_tint"]
-            active_lamps = obj_m["active_lamps"]
-            self.sense_flux(perc_tint, active_lamps, flux, client)
+            artificial_flux = obj_m["artificial_flux"]
+            self.sense_flux(perc_tint, artificial_flux, flux, client)
         else:
             pass
 #        except:
 #            print "Error in parsing the message _ SensorFlux"
         
-    def sense_flux(self, perc_tint, active_lamps, flux, client):
-        lumen_lamp= configuration_room["Room"]["lumen_lamp"]
+    def sense_flux(self, perc_tint, artificial_flux, flux, client):
         self.external_flux = flux
-        artificial_flux = active_lamps * lumen_lamp
         transmitted_flux = perc_tint*self.external_flux
         total_flux = transmitted_flux + artificial_flux
         msg = {

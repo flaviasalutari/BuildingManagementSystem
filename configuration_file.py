@@ -16,9 +16,13 @@ configuration_room = {
                                     "volume" : 4.44 * 5 * 5,
                                     "type" : "Office",
                                     "name": "TheOne",
-                                    "total_lamps": 24,
+                                    "total_lamps_desk": 12,
+                                    "lamps_per_ambient": 4,
+                                    "total_ambients" : 3,
                                     "required_flux" : 55000,
-                                    "lumen_lamp" : 2300,
+                                    "lumen_lamp_desk" : 3000,
+                                    "lumen_lamp_ambient" : 1900,
+
                                     "default_tint" : 1,
                                     "threshold" : 0.3, # 
                                     "TVOC" : {
