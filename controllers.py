@@ -21,7 +21,7 @@ class ShadowingSystem():
     def request_msg_intensity(self, client):
         msg1 = {
                 "request": "get_intensity", 
-                "timestamp": str(datetime.now())
+                "timestamp": str(datetime.now()),
         }
         client.publish(self.topic1, json.dumps(msg1))
         self.read_1 = 0
@@ -82,10 +82,12 @@ class ArtificialLight():
 
 
         
-    def request_msg_flux(self, client):
+    def request_msg_flux(self, client, perctint):
         msg1 = {
                 "request": "get_flux", 
-                "timestamp": str(datetime.now())
+                "timestamp": str(datetime.now()),
+                "active_lamps" : self.active_lamps,
+                "perc_tint" : perctint
         }
         
         client.publish(self.topic1, json.dumps(msg1))
@@ -121,6 +123,8 @@ class ArtificialLight():
                     n_lamps_required = math.ceil(diff / self.lumen_lamp)
                     print "\n Number of lamps to be switched ON: " + str(n_lamps_required)
                     self.actuator(n_lamps_required) 
+                else:
+                    print "\n No additional lamps to be switched OFF"
                     
             else:
                 pass 

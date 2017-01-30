@@ -51,9 +51,10 @@ def main():
         shadow_system.request_msg_people(client)
         time.sleep(0.2)
 
-        artificial_light.request_msg_flux(client)
+        artificial_light.request_msg_flux(client, shadow_system.perc_tints[shadow_system.tint])
         time.sleep(0.2)
         artificial_light.request_msg_people(client)
+        time.sleep(0.2)
 
 #        time.sleep(5)
 

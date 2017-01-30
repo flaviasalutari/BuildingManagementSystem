@@ -3,11 +3,9 @@ import sys
 from environment import Environment
 import paho.mqtt.client as mqtt   
 from configuration_file import configuration_broker    
-from controllers import *
 from sensors import SensorIntensity, SensorFlux, SensorPersonCounter
 #
-shadow_system = ShadowingSystem()
-artificial_light = ArtificialLight()
+
 
 
 outside_environment = Environment()
@@ -27,7 +25,7 @@ def Intensity_callback(client, userdata, msg):
     sensore_intensity.parse_msg(msg.payload, client, outside_environment.intensity)
 
 def Flux_callback(client, userdata, msg):
-    sensore_flusso.parse_msg(msg.payload, client, outside_environment.flux, shadow_system, artificial_light)
+    sensore_flusso.parse_msg(msg.payload, client, outside_environment.flux)
     
 def Nperson_callback(client, userdata, msg):
     sensore_pir.parse_msg(msg.payload, client, outside_environment.n_people)    
