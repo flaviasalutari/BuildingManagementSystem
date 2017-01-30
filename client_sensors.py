@@ -10,7 +10,6 @@ from sensors import SensorIntensity, SensorFlux, SensorPersonCounter
 
 outside_environment = Environment()
 outside_environment.run_environment()
-print outside_environment.n_people
 
 sensore_intensity = SensorIntensity("sensore_intensity")
 sensore_flusso = SensorFlux("sensore_flusso")

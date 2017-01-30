@@ -63,6 +63,7 @@ class SensorFlux(): # Si trova sopra la scrivania , nella colonna dei sensori. e
                 "total_flux_sensed": total_flux, 
                 "timestamp": str(datetime.now())
         }
+        print msg
         client.publish(self.topic, json.dumps(msg))
 
            

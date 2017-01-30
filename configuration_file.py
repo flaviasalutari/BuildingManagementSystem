@@ -12,7 +12,7 @@ configuration_room = {
                                     "room_name": "TheOne",
                                     "room_type" : "office",
                                     "q_iaq" : 47,
-                                    "f_occupation" : 8/24, 
+                                    "f_occupation" : 8.0/24.0, 
                                     "volume" : 4.44 * 5 * 5,
                                     "type" : "Office",
                                     "name": "TheOne",
@@ -21,6 +21,27 @@ configuration_room = {
                                     "lumen_lamp" : 2300,
                                     "default_tint" : 1,
                                     "threshold" : 0.3, # 
+                                    "TVOC" : {
+                                                "f_emission" : {
+                                                                  "wall":   48,
+                                                                  "floor" : 25,
+                                                                  "ceiling" : 48,
+                                                                  "desk" : 110,
+                                                                  "desk_panels" : 68,
+                                                                  "hydroponic_cultivation": 10,
+                                                                  "chairs" : 110
+
+                                                                },
+                                                 "surface" : {
+                                                                  "wall":  66,
+                                                                  "floor" :  25,
+                                                                  "ceiling" : 25,
+                                                                  "desk" : 2,
+                                                                  "desk_panels" :  1,
+                                                                  "hydroponic_cultivation" : 5,
+                                                                  "chairs" : 2
+                                                              }               
+                                              }
                                 }                            
 }
 
