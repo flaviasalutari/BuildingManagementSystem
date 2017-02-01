@@ -11,9 +11,9 @@ from sensors import SensorIntensity, SensorFlux, SensorPersonCounter
 outside_environment = Environment()
 outside_environment.run_environment()
 
-sensore_intensity = SensorIntensity("sensore_intensity")
-sensore_flusso = SensorFlux("sensore_flusso")
-sensore_pir = SensorPersonCounter("sensore_PIR")
+sensor_intensity = SensorIntensity("sensor_intensity")
+sensor_flusso = SensorFlux("sensor_flusso")
+sensor_people = SensorPersonCounter("sensor_people")
 
 
 def on_connect(client, userdata, flags, rc):
@@ -21,19 +21,19 @@ def on_connect(client, userdata, flags, rc):
     client.subscribe("#")       
 
 def Intensity_callback(client, userdata, msg):
-    sensore_intensity.parse_msg(msg.payload, client, outside_environment.intensity)
+    sensor_intensity.parse_msg(msg.payload, client, outside_environment.intensity)
 
 def Flux_callback(client, userdata, msg):
-    sensore_flusso.parse_msg(msg.payload, client, outside_environment.flux)
+    sensor_flusso.parse_msg(msg.payload, client, outside_environment.flux)
     
 def Nperson_callback(client, userdata, msg):
-    sensore_pir.parse_msg(msg.payload, client, outside_environment.n_people)    
+    sensor_people.parse_msg(msg.payload, client, outside_environment.n_people)    
 
 def main():
     
 
     try:
-        client = mqtt.Client()             	  # Create the client mqtt instance to send and retrieve messages to and from the broker 
+        client = mqtt.Client("Sensors")             	  # Create the client mqtt instance to send and retrieve messages to and from the broker 
         client.connect("localhost", 1883, 60) 	  # Connection of the mqtt client instance to the broker (in our case the raspberry)
         client.on_connect = on_connect        # Call the function to show the connection result        
         client.message_callback_add("+/GetIntensity", Intensity_callback) # This topic is used to retrieve all the changes of light on/off- ACK from Arduino

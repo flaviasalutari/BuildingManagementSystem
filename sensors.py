@@ -22,7 +22,7 @@ class SensorIntensity(): # Si trova all'esterno, il suo valore e letto dallo sha
 #            print "Error in parsing the message _ SensorIntensity"
 
     def sense_intensity(self, intensity, client):
-        intensity = intensity + random.uniform(0,1)*0.05 # random rumore
+        intensity = (intensity + random.uniform(0,1)*0.05)/1.05 # random rumore
         msg = {
                 "sensor_type": "intensity",
                 "name": self.name,
@@ -87,7 +87,7 @@ class SensorPersonCounter():
         
     def sense_person(self, n_people, client):
         msg = {
-                "sensor_type": "PIR",
+                "sensor_type": "people_counter",
                 "name": self.name, 
                 "n_people_sensed": n_people, 
                 "timestamp": str(datetime.now())

@@ -6,13 +6,16 @@ configuration_room = {
                                                             3 : 0.10, 
                                                             4: 0.01
                                                         },
-                                        "classA" : 100 # get from a configuration file
+                                        "classA" : 100.0, # get from a configuration file,
+                                        "occupancy_coefficient" : 0.9
                                     },
                         "Room": {
                                     "room_name": "TheOne",
                                     "room_type" : "office",
-                                    "q_iaq" : 47,
+                                    "q_iaq" : 48.5,
                                     "f_occupation" : 8.0/24.0, 
+                                    "daylight_factor" : 0.088,
+                                    "desks_surface" : 4,
                                     "volume" : 4.44 * 5 * 5,
                                     "type" : "Office",
                                     "name": "TheOne",
@@ -37,13 +40,13 @@ configuration_room = {
 
                                                                 },
                                                  "surface" : {
-                                                                  "wall":  66,
+                                                                  "wall":  66.6,
                                                                   "floor" :  25,
                                                                   "ceiling" : 25,
-                                                                  "desk" : 2,
-                                                                  "desk_panels" :  1,
+                                                                  "desk" : 4,
+                                                                  "desk_panels" :  0.9,
                                                                   "hydroponic_cultivation" : 5,
-                                                                  "chairs" : 2
+                                                                  "chairs" : 1.758
                                                               }               
                                               }
                                 }                            
@@ -69,6 +72,15 @@ configuration_environment =  {
                                  3: 1000, 
                                  4: 500
                              },
+
+        "sun_irradiation" : {
+                      1:  [0, 0, 0, 0, 0.15, 0.25, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 0.89, 0.8, 0.6, 0.5, 0.4, 0.25, 0.1, 0, 0, 0, 0],
+                      2:  [0, 0, 0, 0, 0.17, 0.27, 0.34, 0.45, 0.55, 0.65, 0.74, 0.85, 0.94, 0.85, 0.74, 0.65, 0.54, 0.43, 0.3, 0.2, 0.1, 0, 0, 0],
+                      3:  [0, 0, 0, 0, 0.20, 0.30, 0.40, 0.50, 0.60, 0.70, 0.80, 0.90, 1.0, 0.90, 0.80, 0.70, 0.60, 0.50, 0.40, 0.3, 0.2, 0, 0, 0],
+                      4:  [0, 0, 0, 0, 0.16, 0.26, 0.33, 0.43, 0.54, 0.64, 0.73, 0.84, 0.95, 0.84, 0.73, 0.65, 0.53, 0.42, 0.29, 0.2, 0.1, 0, 0, 0]
+                    },
+
+
         "n_people_min" : {
                               0 : 0, 
                               1 : 0, 
@@ -126,9 +138,9 @@ configuration_environment =  {
                            1: 1, 
                            2: 1, 
                            3: 1, 
-                           4 :1, 
+                           4: 1, 
                            5: 0, 
-                           6:0
+                           6: 0
                        } 
 }
 
