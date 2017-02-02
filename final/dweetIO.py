@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from datetime import date as dt
 from datetime import datetime 
 import environment as env
@@ -7,9 +8,13 @@ from six.moves import urllib
 def dweet_sensor_params(shadow_system, light_controller, air_quality_controller):
     dweetIo= "https://dweet.io/dweet/for/"
     my_thing = "sensors_parameters" 
-    flux = str(light_controller.total_flux)
-    intensity = str(shadow_system.ex_intensity)
-    n_people = str(air_quality_controller.n_people)
+    flux = str(int(light_controller.total_flux)) # get flux parameter from light controller
+    intensity = str(round(shadow_system.ex_intensity, 2)) # get intensity parameter from shading controller
+    n_people = air_quality_controller.n_people # get number of people in the room
+    if n_people==0:
+        n_people = "No_people"
+    else:
+        n_people = str(n_people)
     url = dweetIo + my_thing + "?" + "flux" + "=" + flux  + "&" + "intensity" + "=" + intensity + "&" + "n_people" + "=" + n_people
     urllib.request.urlopen(url)
 
@@ -21,7 +26,8 @@ def dweet_actuators_params(shadow_system, air_quality_controller):
     else:
         VOC=str((1.0*air_quality_controller.voc_numerator)/air_quality_controller.ACH)
     tint = str(shadow_system.tint)
-    url = dweetIo + my_thing + "?" + "VOC" + "=" + VOC  + "&" + "tint" + "=" + tint
+    ACH = str(round(air_quality_controller.ACH,2))
+    url = dweetIo + my_thing + "?" + "ACH" + "=" + ACH  + "&" + "tint" + "=" + tint
     urllib.request.urlopen(url)
 
 def dweet_light_control(light_controller):
@@ -54,66 +60,21 @@ def dweet_light_control(light_controller):
 def dweet_datetime():
     dweetIo = "https://dweet.io/dweet/for/"
     my_thing = "datetime"
-    week_day = datetime.now().weekday()
-    if week_day == 0:
-        week_day="Monday"
-    elif week_day == 1:
-        week_day="Tuesday"
-    elif week_day == 2:
-        week_day="Wednesday"
-    elif week_day == 3:
-        week_day="Thursday"
-    elif week_day == 4:
-        week_day="Friday"
-    elif week_day == 5:
-        week_day="Saturday"
-    elif week_day == 6:
-        week_day="Sunday"
+    week_day = datetime.now().strftime('%A')
+
     seasons=env.seasons
     Y=2000
     today = dt.today()
     if isinstance(today, datetime):
             today = today.date()
     today = today.replace(year=Y)
-    # season = next(season for season, (start, end) in seasons if start <= today <= end)
-    # if season == 1:
-    #     season="Winter"
-    # elif season == 2:
-    #     season="Spring"
-    # elif season == 3:
-    #     season="Summer"
-    # elif season == 4:
-    #     season="Fall"
+
     day = today.day
     if day < 10:
         day = "0" + str(day)
     else: day = str(day)
-    month = today.month
-    if month == 1:
-        month = "January"
-    elif month == 2:
-        month = "February"
-    elif month == 3:
-        month = "March"
-    elif month == 4:
-        month = "April"
-    elif month == 5:
-        month = "May"
-    elif month == 6:
-        month = "June"
-    elif month == 7:
-        month = "July"
-    elif month == 8:
-        month = "August"
-    elif month == 9:
-        month = "September"
-    elif month == 10:
-        month = "October"
-    elif month == 11:
-        month = "November"
-    elif month == 12:
-        month = "December"
-    date = day + "-" + month
+
+    date = day + "-" + today.strftime("%B")
     hour = str(datetime.now().hour)
     if hour < 10:
         hour = "0" + str(hour)
