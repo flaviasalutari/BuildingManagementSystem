@@ -17,7 +17,7 @@ class SensorFlux():  # It stands over the desk, in the dedicated column, its val
             if obj_m["request"]== "get_flux":
                 perc_tint = obj_m["perc_tint"] # transmittance factor of the actual tint in use
                 artificial_flux = obj_m["artificial_flux"] 
-                self.sense_flux(perc_tint, artificial_flux, flux, client) # call the sensing function
+                self.sense_flux(perc_tint+0.4, artificial_flux, flux, client) # call the sensing function
             else:
                 pass
         except:
